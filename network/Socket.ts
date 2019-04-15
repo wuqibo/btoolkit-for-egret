@@ -3,6 +3,12 @@ module btoolkit.network {
 
 		private socket: egret.WebSocket;
 		private static instance: Socket;
+		public get isConnected() {
+			return this.socket.connected;
+		}
+		private connectedCallback: Function;
+		private connectErrCallback: Function;
+		private disconnectedCallback: Function;
 
 		public static getInstance(): Socket {
 			if (!this.instance) {
@@ -24,8 +30,11 @@ module btoolkit.network {
 		/**
 		* 开始连接服务器
 		*/
-		public connect(serverIP: string, serverPort: number): void {
+		public connect(serverIP: string, serverPort: number, connectedCallback: Function, connectErrCallback: Function, disconnectedCallback: Function): void {
 			if (this.socket.connected) return;
+			this.connectedCallback = connectedCallback;
+			this.connectErrCallback = connectErrCallback;
+			this.disconnectedCallback = disconnectedCallback;
 			this.socket.connect(serverIP, serverPort);
 		}
 
@@ -52,15 +61,21 @@ module btoolkit.network {
 			}
 		}
 
-		onConnected(): void {
+		private onConnected(): void {
 			console.log("Socket已连接");
+			if (this.connectedCallback != null) {
+				this.connectedCallback();
+			}
 		}
 
-		onIOError(): void {
+		private onIOError(): void {
 			console.log("IO出错");
+			if(this.connectErrCallback){
+				this.connectErrCallback();
+			}
 		}
 
-		onReceiveMsg(): void {
+		private onReceiveMsg(): void {
 			var msg = this.socket.readUTF();
 			console.log("收到服务器消息:" + msg);
 			let protocols: SocketProtocol<any> = JSON.parse(msg);
@@ -71,8 +86,11 @@ module btoolkit.network {
 			}
 		}
 
-		onDisconnected(): void {
+		private onDisconnected(): void {
 			console.log("Socket已断开");
+			if (this.disconnectedCallback != null) {
+				this.disconnectedCallback();
+			}
 		}
 	}
 
