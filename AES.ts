@@ -14,11 +14,10 @@ module btoolkit {
 			if(!key){
 				key = AES.key;
 			}
-			var _input = CryptoJS.enc.Utf8.parse(input);
 			var _key = CryptoJS.enc.Utf8.parse(key);
 			var _iv = CryptoJS.enc.Utf8.parse(AES.iv);
-			var encrypted = CryptoJS.AES.encrypt(_input, _key, { iv: _iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 });
-			return encrypted.ciphertext;
+			var encrypted = CryptoJS.AES.encrypt(input, _key, { iv: _iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 });
+			return encrypted.toString();
 		}
 
 		/**
@@ -31,10 +30,9 @@ module btoolkit {
 			if(!key){
 				key = AES.key;
 			}
-			var _input = CryptoJS.enc.Utf8.parse(input);
 			var _key = CryptoJS.enc.Utf8.parse(key);
 			var _iv = CryptoJS.enc.Utf8.parse(AES.iv);
-			var decrypted = CryptoJS.AES.decrypt(_input, _key, { iv: _iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 });
+			var decrypted = CryptoJS.AES.decrypt(input, _key, { iv: _iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 });
 			return decrypted.toString(CryptoJS.enc.Utf8);
 		}
 	}
