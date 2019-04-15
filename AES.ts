@@ -8,6 +8,9 @@ module btoolkit {
 		* AES加密
 		*/
 		public static encrypt(input: string, key?: string): string {
+			if(!input){
+				return input;
+			}
 			if(!key){
 				key = AES.key;
 			}
@@ -22,6 +25,9 @@ module btoolkit {
 		* AES解密
 		*/
 		public static decrypt(input: string, key?: string): string {
+			if(!input){
+				return input;
+			}
 			if(!key){
 				key = AES.key;
 			}

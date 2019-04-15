@@ -1,7 +1,7 @@
 module btoolkit.network {
 	export class Socket extends egret.DisplayObject {
 
-		private socket: egret.WebSocket = new egret.WebSocket();
+		private socket: egret.WebSocket;
 		private static instance: Socket;
 
 		public static getInstance(): Socket {
@@ -11,15 +11,21 @@ module btoolkit.network {
 			return this.instance;
 		}
 
+		private constructor() {
+			super();
+			this.socket = new egret.WebSocket();
+			this.socket.type = egret.WebSocket.TYPE_BINARY;//以二进制传输(默认为字符串)
+			this.socket.addEventListener(egret.ProgressEvent.SOCKET_DATA, this.onReceiveMsg, this);
+			this.socket.addEventListener(egret.Event.CONNECT, this.onConnected, this);
+			this.socket.addEventListener(egret.Event.CLOSE, this.onDisconnected, this);
+			this.socket.addEventListener(egret.IOErrorEvent.IO_ERROR, this.onIOError, this);
+		}
+
 		/**
 		* 开始连接服务器
 		*/
 		public connect(serverIP: string, serverPort: number): void {
 			if (this.socket.connected) return;
-			this.socket.addEventListener(egret.ProgressEvent.SOCKET_DATA, this.onReceiveMsg, this);
-			this.socket.addEventListener(egret.Event.CONNECT, this.onConnected, this);
-			this.socket.addEventListener(egret.IOErrorEvent.IO_ERROR, this.onIOError, this);
-			this.socket.addEventListener(egret.Event.CLOSE, this.onDisconnected, this);
 			this.socket.connect(serverIP, serverPort);
 		}
 
