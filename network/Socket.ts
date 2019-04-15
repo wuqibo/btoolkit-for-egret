@@ -9,7 +9,10 @@ module btoolkit.network {
 		private connectedCallback: Function;
 		private connectErrCallback: Function;
 		private disconnectedCallback: Function;
+<<<<<<< HEAD
 		private receiveEvent: Function;
+=======
+>>>>>>> 3b0cd78e7aae72c1f81b44ec34f98248415baae1
 
 		public static getInstance(): Socket {
 			if (!this.instance) {
@@ -60,8 +63,15 @@ module btoolkit.network {
 		 */
 		public sendBytes(bytes: egret.ByteArray): void {
 			if (this.socket.connected) {
+<<<<<<< HEAD
 				this.socket.writeBytes(bytes, 0, bytes.bytesAvailable);
 				this.socket.flush();
+=======
+				let protocols = new SocketProtocol<T>();
+				protocols.id = protocolId;
+				protocols.data = data;
+				this.socket.writeUTF(JSON.stringify(protocols));
+>>>>>>> 3b0cd78e7aae72c1f81b44ec34f98248415baae1
 			} else {
 				console.error("Socket未建立连接");
 			}
@@ -76,8 +86,24 @@ module btoolkit.network {
 
 		private onIOError(): void {
 			console.log("IO出错");
+<<<<<<< HEAD
 			if (this.connectErrCallback) {
 				this.connectErrCallback();
+=======
+			if(this.connectErrCallback){
+				this.connectErrCallback();
+			}
+		}
+
+		private onReceiveMsg(): void {
+			var msg = this.socket.readUTF();
+			console.log("收到服务器消息:" + msg);
+			let protocols: SocketProtocol<any> = JSON.parse(msg);
+			try {
+				this.dispatchEvent(protocols);
+			} catch (error) {
+				console.error("网络事件：" + protocols.id + "-处理错误");
+>>>>>>> 3b0cd78e7aae72c1f81b44ec34f98248415baae1
 			}
 		}
 
