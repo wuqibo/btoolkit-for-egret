@@ -43,10 +43,10 @@ module btoolkit.network {
 		 */
 		public send<T>(protocolId: number, data: T): void {
 			if (this.socket.connected) {
-				let protocol = new SocketProtocol<T>();
-				protocol.id = protocolId;
-				protocol.data = data;
-				this.socket.writeUTF(JSON.stringify(protocol));
+				let protocols = new SocketProtocol<T>();
+				protocols.id = protocolId;
+				protocols.data = data;
+				this.socket.writeUTF(JSON.stringify(protocols));
 			} else {
 				console.error("Socket未建立连接");
 			}
@@ -63,11 +63,11 @@ module btoolkit.network {
 		onReceiveMsg(): void {
 			var msg = this.socket.readUTF();
 			console.log("收到服务器消息:" + msg);
-			let protocol: SocketProtocol<any> = JSON.parse(msg);
+			let protocols: SocketProtocol<any> = JSON.parse(msg);
 			try {
-				this.dispatchEvent(protocol);
+				this.dispatchEvent(protocols);
 			} catch (error) {
-				console.error("网络事件：" + protocol.id + "-处理错误");
+				console.error("网络事件：" + protocols.id + "-处理错误");
 			}
 		}
 
