@@ -3,6 +3,13 @@ module btoolkit.network {
 
 		private socket: egret.WebSocket;
 		private static instance: Socket;
+		public get isConnected() {
+			return this.socket.connected;
+		}
+		private connectedCallback: Function;
+		private connectErrCallback: Function;
+		private disconnectedCallback: Function;
+		private receiveEvent: Function;
 
 		public static getInstance(): Socket {
 			if (!this.instance) {
@@ -24,8 +31,11 @@ module btoolkit.network {
 		/**
 		* 开始连接服务器
 		*/
-		public connect(serverIP: string, serverPort: number): void {
+		public connect(serverIP: string, serverPort: number, connectedCallback: Function, connectErrCallback: Function, disconnectedCallback: Function): void {
 			if (this.socket.connected) return;
+			this.connectedCallback = connectedCallback;
+			this.connectErrCallback = connectErrCallback;
+			this.disconnectedCallback = disconnectedCallback;
 			this.socket.connect(serverIP, serverPort);
 		}
 
@@ -39,49 +49,52 @@ module btoolkit.network {
 		}
 
 		/**
-		 * 发送Socket消息，接收使用:SocketManager.getInstance().addEventListener(SocketProtocol.ReceiveMsg,(e:SocketProtocol<any>)=>{},this);
+		 * 注册消息回调(返回数据类型：egret.ByteArray)
 		 */
-		public send<T>(protocolId: number, data: T): void {
+		public setReceiveEvent(callback: Function): void {
+			this.receiveEvent = callback;
+		}
+
+		/**
+		 * 发送Socket消息（先调用addProtocolListener()方法监听回调）
+		 */
+		public sendBytes(bytes: egret.ByteArray): void {
 			if (this.socket.connected) {
-				let protocol = new SocketProtocol<T>();
-				protocol.id = protocolId;
-				protocol.data = data;
-				this.socket.writeUTF(JSON.stringify(protocol));
+				this.socket.writeBytes(bytes, 0, bytes.bytesAvailable);
+				this.socket.flush();
 			} else {
 				console.error("Socket未建立连接");
 			}
 		}
 
-		onConnected(): void {
+		private onConnected(): void {
 			console.log("Socket已连接");
-		}
-
-		onIOError(): void {
-			console.log("IO出错");
-		}
-
-		onReceiveMsg(): void {
-			var msg = this.socket.readUTF();
-			console.log("收到服务器消息:" + msg);
-			let protocol: SocketProtocol<any> = JSON.parse(msg);
-			try {
-				this.dispatchEvent(protocol);
-			} catch (error) {
-				console.error("网络事件：" + protocol.id + "-处理错误");
+			if (this.connectedCallback != null) {
+				this.connectedCallback();
 			}
 		}
 
-		onDisconnected(): void {
-			console.log("Socket已断开");
+		private onIOError(): void {
+			console.log("IO出错");
+			if (this.connectErrCallback) {
+				this.connectErrCallback();
+			}
 		}
-	}
 
-	export class SocketProtocol<T> extends egret.Event {
-		public static ReceiveMsg = "ReceiveSocketMsg";
-		public id: number;
-		public data: T;
-		public constructor() {
-			super(SocketProtocol.ReceiveMsg);
+		private onDisconnected(): void {
+			console.log("Socket已断开");
+			if (this.disconnectedCallback != null) {
+				this.disconnectedCallback();
+			}
+		}
+
+		private onReceiveMsg(): void {
+			let bytes = new egret.ByteArray();
+			bytes.endian = egret.Endian.LITTLE_ENDIAN;
+			this.socket.readBytes(bytes);
+			if (this.receiveEvent) {
+				this.receiveEvent(bytes);
+			}
 		}
 	}
 }
