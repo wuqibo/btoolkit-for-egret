@@ -90,14 +90,9 @@ module btoolkit.network {
 
 		private onReceiveMsg(): void {
 			let bytes = new egret.ByteArray();
-<<<<<<< HEAD
 			bytes.endian = egret.Endian.LITTLE_ENDIAN;
 			this.socket.readBytes(bytes);
 			if (this.receiveEvent) {
-=======
-			this.socket.readBytes(bytes);
-			if(this.receiveEvent){
->>>>>>> c768579cd24d15a8387ea896fb07f01e1a79994e
 				this.receiveEvent(bytes);
 			}
 		}
