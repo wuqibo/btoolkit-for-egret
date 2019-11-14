@@ -1,5 +1,10 @@
 module btoolkit.network {
 	export class Http {
+		
+		/**
+		 * 跨域访问：服务器配置：在response里添加
+		 * response.setHeader("Access-Control-Allow-Origin", "*"); 
+		 */
 
 		public static timeout = 5;
 		private url: string = "";
@@ -51,7 +56,7 @@ module btoolkit.network {
 		/**
 		* Http的POST方式访问，succeedCallback返回参数any，errorCallback返回错误参数（e:egret.IOErrorEvent）
 		*/
-		public post(url: string, params: { [key: string]: string }, succeedCallback: Function, errorCallback: Function = null): void {
+		public post(url: string, params: { [key: string]: Object }, succeedCallback: Function, errorCallback: Function = null): void {
 			this.url = url;
 			var request = new egret.HttpRequest();
 			request.timeout = Http.timeout * 1000;
