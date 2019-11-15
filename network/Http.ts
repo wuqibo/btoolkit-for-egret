@@ -43,7 +43,6 @@ module btoolkit.network {
 			} else {
 				request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 			}
-			request.setRequestHeader("Charset", "UTF-8");
 			request.addEventListener(egret.Event.COMPLETE, (e: egret.Event) => {
 				succeedCallback(request.response);
 			}, this);
@@ -67,7 +66,6 @@ module btoolkit.network {
 			} else {
 				request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 			}
-			request.setRequestHeader("Charset", "UTF-8");
 			request.addEventListener(egret.Event.COMPLETE, (e: egret.Event) => {
 				succeedCallback(request.response);
 			}, this);
