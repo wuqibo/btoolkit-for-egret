@@ -78,14 +78,20 @@ module btoolkit.network {
 				let jsonData = JSON.stringify(params);
 				request.send(jsonData);
 			} else {
-				var paramsStr = "";
 				if (params != null) {
+					var paramsStr = "";
 					for (var key in params) {
-						paramsStr += ("&" + key + "=" + params[key]);
+						if (paramsStr == '') {
+							paramsStr += key + "=" + params[key];
+						} else {
+							paramsStr += "," + key + "=" + params[key];
+						}
 					}
+					//console.log("---------提交POST参数:" + paramsStr);
+					request.send(paramsStr);
+				} else {
+					request.send();
 				}
-				paramsStr = paramsStr.substr(1, paramsStr.length);
-				request.send(paramsStr);
 			}
 		}
 
